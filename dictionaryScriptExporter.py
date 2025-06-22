@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import logging
 import os
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,11 @@ if __name__ == '__main__':
     alph = "abcdefghijklmnopqrstuvwxyz"
     if os.environ.get('DEV'):
         alph = "x"
-    print("word,pos,definition")
-    for word, pos, definition in crawl(alph):
-        print(f"{word},{pos},{definition}")
+    last_word = None  # Variable to store the last added word
+    valid_chars = set(string.ascii_lowercase)  # Set of valid characters (a-z)
+    with open("words.txt", "w") as file:  # Open a file in write mode
+        for word, pos, definition in crawl(alph):
+            if word != last_word and all(char in valid_chars for char in word.lower()):  # Check validity
+                file.write(f"{word}\n")  # Write the word to the file
+                print(f"New word added: {word}")  # Print confirmation to console
+                last_word = word  # Update the last added word
